@@ -3,11 +3,13 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
+import { Network } from '@ionic-native/network';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 
 import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { NetworkConnectionProvider } from '../providers/network-connection/network-connection';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
     StatusBar,
     SplashScreen,
     InAppBrowser,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    Network,
+    NetworkConnectionProvider
   ]
 })
 export class AppModule {}
