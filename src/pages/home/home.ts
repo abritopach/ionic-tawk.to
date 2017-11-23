@@ -48,8 +48,25 @@ export class HomePage {
           this.hasConnection = false;
         });
       }
+      else if (readySource == "dom") {
+        if (navigator.onLine) {
+          this.online();
+        }
+        window.addEventListener('online', this.online.bind(this));
+        window.addEventListener('offline', this.offline.bind(this));
+      }
 
     });
+  }
+
+  online() {
+    console.log('Network connected!');
+    this.hasConnection = true;
+  }
+
+  offline() {
+    console.log('Network was disconnected :-(');
+    this.hasConnection = false;
   }
 
   onClickChat() {
