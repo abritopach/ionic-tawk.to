@@ -11,66 +11,30 @@ import { NetworkConnectionProvider } from '../../providers/network-connection/ne
 })
 export class HomePage {
 
-  hasConnection: boolean = false;
-
   private readonly tawkChatLink : string = 'https://tawk.to/chat/5a144685bb0c3f433d4ca72e/default/?$_tawk_popout=true';
 
   constructor(public navCtrl: NavController, private iab: InAppBrowser, private networkConnection: NetworkConnectionProvider,
     private platform: Platform, private alertCtrl: AlertController) {
+      this.addConnectivityListeners();
   }
 
-  ionViewDidEnter() {
-    console.log("ionViewDidEnter");
+  addConnectivityListeners() {
+
     this.platform.ready().then((readySource) => {
       console.log('Platform ready from', readySource);
       // Platform now ready, execute any required native code.
       if (readySource == "cordova") {
-
-        if (this.networkConnection.getNetwork().type != "NONE") {
-          this.hasConnection = true;
-        }
-
-        this.networkConnection.watchNetworkConnection().subscribe(() => {
-          console.log('Network connected!');
-          // We just got a connection but we need to wait briefly
-          // before we determine the connection type. Might need to wait.
-          // prior to doing any api requests as well.
-          this.hasConnection = true;
-          setTimeout(() => {
-            if (this.networkConnection.getNetwork().type === 'wifi') {
-              console.log('We got a wifi connection, woohoo!');
-            }
-          }, 3000);
-        });
-    
-        this.networkConnection.watchNetworkDisconnect().subscribe(() => {
-          console.log('Network was disconnected :-(');
-          this.hasConnection = false;
-        });
+        this.networkConnection.addConnectivityListenersDevice();
       }
       else if (readySource == "dom") {
-        if (navigator.onLine) {
-          this.online();
-        }
-        window.addEventListener('online', this.online.bind(this));
-        window.addEventListener('offline', this.offline.bind(this));
+         this.networkConnection.addConnectivityListenersBrowser();
       }
-
     });
-  }
-
-  online() {
-    console.log('Network connected!');
-    this.hasConnection = true;
-  }
-
-  offline() {
-    console.log('Network was disconnected :-(');
-    this.hasConnection = false;
+    
   }
 
   onClickChat() {
-    if (this.hasConnection) {
+    if (this.networkConnection.hasConnection()) {
       const browser = this.iab.create(this.tawkChatLink,'_self',{location:'no'}); 
     }
     else this.presentAlert();
